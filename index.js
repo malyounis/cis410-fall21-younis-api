@@ -3,6 +3,7 @@ const express = require("express");
 const db = require("./dbConnectExec.js");
 
 const app = express();
+app.use(express.json());
 
 app.listen(5000, () => {
   console.log("app is running on port 5000");
@@ -18,6 +19,40 @@ app.get("/", (req, res) => {
 
 // app.post();
 // app.put();
+
+app.post("/contact", async (req, res) => {
+  //res.send("contacts called");
+
+  //console.log(req.body);
+
+  let nameFirst = req.body.nameFirst;
+  let nameLast = req.body.nameLast;
+  let email = req.body.email;
+  let password = req.body.password;
+
+  let emailCheckQuery = `SELECT Email
+  FROM Contact
+  WHERE Email = '${email}'`;
+
+  let existingUser = await db.executeQuery(emailCheckQuery);
+
+  //console.log(existingUser);
+
+  if (existingUser[0]) {
+    return res.status(409).send("Duplicate email");
+  }
+
+  let insertQuery = `INSERT INTO Contact(NameFirst, NameLast, Email, Password)
+  VALUES('${nameFirst}', '${nameLast}', '${email}', '${password}')`;
+  db.executeQuery(insertQuery)
+    .then(() => {
+      res.status(201).send();
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send();
+    });
+});
 
 app.get("/product", (req, res) => {
   //get data from database
