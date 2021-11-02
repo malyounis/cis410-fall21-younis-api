@@ -11,7 +11,13 @@ async function executeQuery(aQuery) {
   let connection = await sql.connect(config);
   let result = await connection.query(aQuery);
 
-  console.log(result);
-
-  //4:19, you need to fix the bug inside ur own folder..
+  //console.log(result);
+  return result.recordset;
 }
+
+// executeQuery(`SELECT *
+// FROM Product
+// LEFT JOIN ProductType
+// ON ProductType.ProductTypePK = Product.ProductTypePK`);
+
+module.exports = { executeQuery: executeQuery };

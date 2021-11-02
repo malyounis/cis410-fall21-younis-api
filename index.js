@@ -1,5 +1,7 @@
 const express = require("express");
 
+const db = require("./dbConnectExec.js");
+
 const app = express();
 
 app.listen(5000, () => {
@@ -17,6 +19,14 @@ app.get("/", (req, res) => {
 // app.post();
 // app.put();
 
-app.get("/movies", (req, res) => {
+app.get("/product", (req, res) => {
   //get data from database
+  db.executeQuery(
+    `SELECT *
+  FROM Product
+  LEFT JOIN ProductType
+  ON ProductType.ProductTypePK = Product.ProductTypePK`
+  ).then((theResults) => {
+    res.status(200).send(theResults);
+  });
 });
