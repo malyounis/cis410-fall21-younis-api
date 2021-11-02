@@ -1,10 +1,12 @@
 const sql = require("mssql");
 
+const synnylConfig = require("./config.js");
+
 const config = {
-  user: "csu",
-  password: "Uuxwp7Mcxo7Khy",
-  server: "cobazsqlcis410.database.windows.net", // You can use 'localhost\\instance' to connect to named instance
-  database: "synnyl",
+  user: synnylConfig.DB.user,
+  password: synnylConfig.DB.password,
+  server: synnylConfig.DB.server,
+  database: synnylConfig.DB.database,
 };
 
 async function executeQuery(aQuery) {

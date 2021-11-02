@@ -26,7 +26,12 @@ app.get("/product", (req, res) => {
   FROM Product
   LEFT JOIN ProductType
   ON ProductType.ProductTypePK = Product.ProductTypePK`
-  ).then((theResults) => {
-    res.status(200).send(theResults);
-  });
+  )
+    .then((theResults) => {
+      res.status(200).send(theResults);
+    })
+    .catch((myError) => {
+      console.log(myError);
+      res.status(500).send();
+    });
 });
