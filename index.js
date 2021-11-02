@@ -16,3 +16,7 @@ app.get("/", (req, res) => {
 
 // app.post();
 // app.put();
+
+app.get("/movies", (req, res) => {
+  //get data from database
+});
