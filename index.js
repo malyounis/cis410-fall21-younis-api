@@ -35,3 +35,27 @@ app.get("/product", (req, res) => {
       res.status(500).send();
     });
 });
+
+app.get("/product/:pk", (req, res) => {
+  let pk = req.params.pk;
+  //console.log(pk);
+  let myQuery = `SELECT *
+  FROM Product
+  LEFT JOIN ProductType
+  ON ProductType.ProductTypePK = Product.ProductTypePK
+  WHERE ProductPk = ${pk};`;
+
+  db.executeQuery(myQuery)
+    .then((result) => {
+      //console.log(result);
+      if (result[0]) {
+        res.send(result[0]);
+      } else {
+        res.status(404).send(`Bad Request`);
+      }
+    })
+    .catch((error) => {
+      console.log(err);
+      res.status(500).send();
+    });
+});
