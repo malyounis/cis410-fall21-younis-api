@@ -1,5 +1,5 @@
 const express = require("express");
-
+const bcrypt = require("bcryptjs");
 const db = require("./dbConnectExec.js");
 
 const app = express();
@@ -30,6 +30,13 @@ app.post("/contact", async (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
 
+  if (!nameFirst || !nameLast || !email || !password) {
+    return res.status(400).send("Bad Request");
+  }
+
+  nameFirst = nameFirst.replace("'", "''");
+  nameLast = nameLast.replace("'", "''");
+
   let emailCheckQuery = `SELECT Email
   FROM Contact
   WHERE Email = '${email}'`;
@@ -42,8 +49,10 @@ app.post("/contact", async (req, res) => {
     return res.status(409).send("Duplicate email");
   }
 
+  let hashedPassword = bcrypt.hashSync(password);
+
   let insertQuery = `INSERT INTO Contact(NameFirst, NameLast, Email, Password)
-  VALUES('${nameFirst}', '${nameLast}', '${email}', '${password}')`;
+  VALUES('${nameFirst}', '${nameLast}', '${email}', '${hashedPassword}')`;
   db.executeQuery(insertQuery)
     .then(() => {
       res.status(201).send();
