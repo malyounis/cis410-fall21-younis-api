@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const db = require("./dbConnectExec.js");
 const jwt = require("jsonwebtoken");
 const synnylConfig = require("./config.js");
-
+const auth = require("./middleware/authenticate");
 const app = express();
 app.use(express.json());
 
@@ -19,8 +19,42 @@ app.get("/", (req, res) => {
   res.send("API is running");
 });
 
-// app.post();
-// app.put();
+app.post("/contactpref", auth, async (req, res) => {
+  try {
+    let productFK = req.body.productFK;
+    let color = req.body.color;
+    let storage = req.body.storage;
+    let screenSize = req.body.screenSize;
+
+    if (
+      !productFK ||
+      !color ||
+      !storage ||
+      !Number.isInteger(storage) ||
+      !screenSize ||
+      !Number.isInteger(screenSize)
+    ) {
+      return res.status(400).send("Bad Request");
+    }
+    color = color.replace("'", "''");
+
+    let insertQuery = `INSERT INTO ContactPreferences(Color, Storage, ScreenSize, ContactFK, ProductFK)
+    OUTPUT inserted.ContactPreferencesPK, inserted.Color, inserted.Storage, inserted.ScreenSize, inserted.ProductFk
+    VALUES('${color}', '${storage}', '${screenSize}', '${req.contact.ContactPK}', '${productFK}')`;
+
+    let insertedPreference = await db.executeQuery(insertQuery);
+    console.log(insertedPreference);
+    res.status(201).send(insertedPreference[0]);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send();
+  }
+});
+
+app.get("/contact/me", auth, (req, res) => {
+  res.send(req.contact);
+});
+
 app.post("/contact/login", async (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
