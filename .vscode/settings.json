@@ -1,0 +1,4 @@
+{
+  "appService.defaultWebAppToDeploy": "/subscriptions/66c9d643-d4ef-4a01-a24b-852bf030827c/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/cis410-fa21-younis-api",
+  "appService.deploySubpath": "."
+}

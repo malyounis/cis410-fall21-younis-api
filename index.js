@@ -5,10 +5,14 @@ const jwt = require("jsonwebtoken");
 const synnylConfig = require("./config.js");
 const auth = require("./middleware/authenticate");
 const app = express();
+const cors = require("cors");
 app.use(express.json());
+app.use(cors());
 
-app.listen(5000, () => {
-  console.log("app is running on port 5000");
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`app is running on port ${PORT}`);
 });
 
 app.get("/hi", (req, res) => {
