@@ -56,7 +56,7 @@ app.post("/contact/login", async (req, res) => {
   });
 
   let setTokenQuery = `Update Contact
-  Set token = '${myToken}'
+  Set token = '${token}'
   WHERE ContactPK = ${user.ContactPK}`;
 
   try {
