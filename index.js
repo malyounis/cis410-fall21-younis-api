@@ -1,6 +1,8 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const db = require("./dbConnectExec.js");
+const jwt = require("jsonwebtoken");
+const synnylConfig = require("./config.js");
 
 const app = express();
 app.use(express.json());
@@ -19,6 +21,60 @@ app.get("/", (req, res) => {
 
 // app.post();
 // app.put();
+app.post("/contact/login", async (req, res) => {
+  let email = req.body.email;
+  let password = req.body.password;
+
+  if (!email || !password) {
+    return res.status(400).send("Bad Request");
+  }
+
+  let query = `SELECT * 
+  FROM Contact
+  WHERE Email = '${email}' `;
+
+  let result;
+  try {
+    result = await db.executeQuery(query);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send();
+  }
+
+  if (!result[0]) {
+    return res.status(401).send("Invalid user credentials");
+  }
+
+  let user = result[0];
+
+  if (!bcrypt.compareSync(password, user.Password)) {
+    return res.status(401).send("Invalid user credentials");
+  }
+
+  let token = jwt.sign({ pk: user.ContactPK }, synnylConfig.JWT, {
+    expiresIn: "60 minutes",
+  });
+
+  let setTokenQuery = `Update Contact
+  Set token = '${myToken}'
+  WHERE ContactPK = ${user.ContactPK}`;
+
+  try {
+    await db.executeQuery(setTokenQuery);
+    res.status(200).send({
+      token: token,
+      user: {
+        NameFirst: user.NameFirst,
+        NameLast: user.NameLast,
+        Email: user.Email,
+        ContactPK: user.ContactPK,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send();
+  }
+});
 
 app.post("/contact", async (req, res) => {
   //res.send("contacts called");
