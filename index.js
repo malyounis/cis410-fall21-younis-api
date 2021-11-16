@@ -23,6 +23,41 @@ app.get("/", (req, res) => {
   res.send("API is running");
 });
 
+app.post("/contact/logout", auth, (req, res) => {
+  let query = `UPDATE Contact 
+  SET Token = NULL
+  WHERE ContactPK = ${req.contact.ContactPK}`;
+
+  db.executeQuery(query)
+    .then(() => {
+      res.status(200).send();
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send();
+    });
+});
+
+app.get("/contactpref/me", auth, async (req, res) => {
+  //get contactPK
+  let query = `SELECT ContactPreferencesPK, ContactPreferences.Color, Storage, ScreenSize, ProductFK, Price
+  FROM ContactPreferences
+  LEFT JOIN Product
+  ON Product.ProductPK = ContactPreferences.ProductFK
+  WHERE ContactFK = ${req.contact.ContactPK}
+  `;
+  //query database for their records
+  //db.executeQuery(query)
+  try {
+    let queryResponse = await db.executeQuery(query);
+    res.status(200).send(queryResponse);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send();
+  }
+  //send reviews back to them
+});
+
 app.post("/contactpref", auth, async (req, res) => {
   try {
     let productFK = req.body.productFK;
