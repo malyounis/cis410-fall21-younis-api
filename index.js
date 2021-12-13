@@ -211,8 +211,7 @@ app.get("/product", (req, res) => {
 
 app.get("/product/:pk", (req, res) => {
   let pk = req.params.pk;
-  //console.log(pk);
-  let myQuery = `SELECT *
+  let myQuery = `SELECT Product.ProductPK, ProductType.ProductTypePK, Product.Price, Product.Color, ProductType.Storage, ProductType.ScreenSize
   FROM Product
   LEFT JOIN ProductType
   ON ProductType.ProductTypePK = Product.ProductTypePK
